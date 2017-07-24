@@ -1,0 +1,16 @@
+﻿<Window x:Class="testClient.WinLogin"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:testClient"
+        mc:Ignorable="d"
+        Title="WinLogin" Height="300" Width="300">
+    <Grid>
+        <TextBox x:Name="textbox_ip" HorizontalAlignment="Left" Height="23" TextWrapping="Wrap" Text="127.0.0.1:6325" VerticalAlignment="Top" Width="120" Margin="10,51,0,0"/>
+        <TextBox x:Name="textbox_name" HorizontalAlignment="Left" Height="23" TextWrapping="Wrap" Text="player1" VerticalAlignment="Top" Width="120" Margin="10,91,0,0"/>
+        <Button x:Name="button_connect" Content="connect" HorizontalAlignment="Left" VerticalAlignment="Top" Width="75" Margin="45,203,0,0" Click="button_connect_Click"/>
+        <Button x:Name="button_auth" Content="auth" HorizontalAlignment="Left" VerticalAlignment="Top" Width="75" Margin="137,203,0,0" Click="button_auth_Click"/>
+
+    </Grid>
+</Window>

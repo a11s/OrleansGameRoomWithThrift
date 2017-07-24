@@ -3,6 +3,8 @@ using System;
 using Orleans;
 using Orleans.Runtime.Configuration;
 using Orleans.Runtime.Host;
+using ServerInterface;
+using System.Net;
 
 namespace SiloHost1
 {
@@ -31,7 +33,13 @@ namespace SiloHost1
             //
             // This is the place for your test code.
             //
+            var xxxx = new ClientConfiguration();
+            xxxx.GatewayProvider = ClientConfiguration.GatewayProviderType.None;
+            xxxx.Gateways.Add(new System.Net.IPEndPoint(IPAddress.Parse("127.0.0.1"), 40000));
+            GrainClient.Initialize(xxxx);
 
+            var gw = GrainClient.GrainFactory.GetGrain<IGateway>("gw1");
+            var succ = gw.Start().Result;
             Console.WriteLine("\nPress Enter to terminate...");
             Console.ReadLine();
 
