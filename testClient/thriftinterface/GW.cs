@@ -19,27 +19,37 @@ namespace Client
 {
   public partial class GW {
     public interface ISync {
-      bool auth(string name);
-      bool join_map(string map_name);
-      bool try_move(string key, double x, double y, double z);
-      List<game_event> get_events();
+      string auth(string acc_name);
+      List<player_base_info> get_player_list(string sid);
+      bool join_game(string sid, string player_name);
+      bool join_map(string sid, string map_name);
+      bool try_move(string sid, string key, double x, double y, double z);
+      List<game_event> get_events(string sid);
     }
 
     public interface Iface : ISync {
       #if SILVERLIGHT
-      IAsyncResult Begin_auth(AsyncCallback callback, object state, string name);
-      bool End_auth(IAsyncResult asyncResult);
+      IAsyncResult Begin_auth(AsyncCallback callback, object state, string acc_name);
+      string End_auth(IAsyncResult asyncResult);
       #endif
       #if SILVERLIGHT
-      IAsyncResult Begin_join_map(AsyncCallback callback, object state, string map_name);
+      IAsyncResult Begin_get_player_list(AsyncCallback callback, object state, string sid);
+      List<player_base_info> End_get_player_list(IAsyncResult asyncResult);
+      #endif
+      #if SILVERLIGHT
+      IAsyncResult Begin_join_game(AsyncCallback callback, object state, string sid, string player_name);
+      bool End_join_game(IAsyncResult asyncResult);
+      #endif
+      #if SILVERLIGHT
+      IAsyncResult Begin_join_map(AsyncCallback callback, object state, string sid, string map_name);
       bool End_join_map(IAsyncResult asyncResult);
       #endif
       #if SILVERLIGHT
-      IAsyncResult Begin_try_move(AsyncCallback callback, object state, string key, double x, double y, double z);
+      IAsyncResult Begin_try_move(AsyncCallback callback, object state, string sid, string key, double x, double y, double z);
       bool End_try_move(IAsyncResult asyncResult);
       #endif
       #if SILVERLIGHT
-      IAsyncResult Begin_get_events(AsyncCallback callback, object state);
+      IAsyncResult Begin_get_events(AsyncCallback callback, object state, string sid);
       List<game_event> End_get_events(IAsyncResult asyncResult);
       #endif
     }
@@ -102,12 +112,12 @@ namespace Client
 
       
       #if SILVERLIGHT
-      public IAsyncResult Begin_auth(AsyncCallback callback, object state, string name)
+      public IAsyncResult Begin_auth(AsyncCallback callback, object state, string acc_name)
       {
-        return send_auth(callback, state, name);
+        return send_auth(callback, state, acc_name);
       }
 
-      public bool End_auth(IAsyncResult asyncResult)
+      public string End_auth(IAsyncResult asyncResult)
       {
         oprot_.Transport.EndFlush(asyncResult);
         return recv_auth();
@@ -115,27 +125,27 @@ namespace Client
 
       #endif
 
-      public bool auth(string name)
+      public string auth(string acc_name)
       {
         #if !SILVERLIGHT
-        send_auth(name);
+        send_auth(acc_name);
         return recv_auth();
 
         #else
-        var asyncResult = Begin_auth(null, null, name);
+        var asyncResult = Begin_auth(null, null, acc_name);
         return End_auth(asyncResult);
 
         #endif
       }
       #if SILVERLIGHT
-      public IAsyncResult send_auth(AsyncCallback callback, object state, string name)
+      public IAsyncResult send_auth(AsyncCallback callback, object state, string acc_name)
       #else
-      public void send_auth(string name)
+      public void send_auth(string acc_name)
       #endif
       {
         oprot_.WriteMessageBegin(new TMessage("auth", TMessageType.Call, seqid_));
         auth_args args = new auth_args();
-        args.Name = name;
+        args.Acc_name = acc_name;
         args.Write(oprot_);
         oprot_.WriteMessageEnd();
         #if SILVERLIGHT
@@ -145,7 +155,7 @@ namespace Client
         #endif
       }
 
-      public bool recv_auth()
+      public string recv_auth()
       {
         TMessage msg = iprot_.ReadMessageBegin();
         if (msg.Type == TMessageType.Exception) {
@@ -164,9 +174,134 @@ namespace Client
 
       
       #if SILVERLIGHT
-      public IAsyncResult Begin_join_map(AsyncCallback callback, object state, string map_name)
+      public IAsyncResult Begin_get_player_list(AsyncCallback callback, object state, string sid)
       {
-        return send_join_map(callback, state, map_name);
+        return send_get_player_list(callback, state, sid);
+      }
+
+      public List<player_base_info> End_get_player_list(IAsyncResult asyncResult)
+      {
+        oprot_.Transport.EndFlush(asyncResult);
+        return recv_get_player_list();
+      }
+
+      #endif
+
+      public List<player_base_info> get_player_list(string sid)
+      {
+        #if !SILVERLIGHT
+        send_get_player_list(sid);
+        return recv_get_player_list();
+
+        #else
+        var asyncResult = Begin_get_player_list(null, null, sid);
+        return End_get_player_list(asyncResult);
+
+        #endif
+      }
+      #if SILVERLIGHT
+      public IAsyncResult send_get_player_list(AsyncCallback callback, object state, string sid)
+      #else
+      public void send_get_player_list(string sid)
+      #endif
+      {
+        oprot_.WriteMessageBegin(new TMessage("get_player_list", TMessageType.Call, seqid_));
+        get_player_list_args args = new get_player_list_args();
+        args.Sid = sid;
+        args.Write(oprot_);
+        oprot_.WriteMessageEnd();
+        #if SILVERLIGHT
+        return oprot_.Transport.BeginFlush(callback, state);
+        #else
+        oprot_.Transport.Flush();
+        #endif
+      }
+
+      public List<player_base_info> recv_get_player_list()
+      {
+        TMessage msg = iprot_.ReadMessageBegin();
+        if (msg.Type == TMessageType.Exception) {
+          TApplicationException x = TApplicationException.Read(iprot_);
+          iprot_.ReadMessageEnd();
+          throw x;
+        }
+        get_player_list_result result = new get_player_list_result();
+        result.Read(iprot_);
+        iprot_.ReadMessageEnd();
+        if (result.__isset.success) {
+          return result.Success;
+        }
+        throw new TApplicationException(TApplicationException.ExceptionType.MissingResult, "get_player_list failed: unknown result");
+      }
+
+      
+      #if SILVERLIGHT
+      public IAsyncResult Begin_join_game(AsyncCallback callback, object state, string sid, string player_name)
+      {
+        return send_join_game(callback, state, sid, player_name);
+      }
+
+      public bool End_join_game(IAsyncResult asyncResult)
+      {
+        oprot_.Transport.EndFlush(asyncResult);
+        return recv_join_game();
+      }
+
+      #endif
+
+      public bool join_game(string sid, string player_name)
+      {
+        #if !SILVERLIGHT
+        send_join_game(sid, player_name);
+        return recv_join_game();
+
+        #else
+        var asyncResult = Begin_join_game(null, null, sid, player_name);
+        return End_join_game(asyncResult);
+
+        #endif
+      }
+      #if SILVERLIGHT
+      public IAsyncResult send_join_game(AsyncCallback callback, object state, string sid, string player_name)
+      #else
+      public void send_join_game(string sid, string player_name)
+      #endif
+      {
+        oprot_.WriteMessageBegin(new TMessage("join_game", TMessageType.Call, seqid_));
+        join_game_args args = new join_game_args();
+        args.Sid = sid;
+        args.Player_name = player_name;
+        args.Write(oprot_);
+        oprot_.WriteMessageEnd();
+        #if SILVERLIGHT
+        return oprot_.Transport.BeginFlush(callback, state);
+        #else
+        oprot_.Transport.Flush();
+        #endif
+      }
+
+      public bool recv_join_game()
+      {
+        TMessage msg = iprot_.ReadMessageBegin();
+        if (msg.Type == TMessageType.Exception) {
+          TApplicationException x = TApplicationException.Read(iprot_);
+          iprot_.ReadMessageEnd();
+          throw x;
+        }
+        join_game_result result = new join_game_result();
+        result.Read(iprot_);
+        iprot_.ReadMessageEnd();
+        if (result.__isset.success) {
+          return result.Success;
+        }
+        throw new TApplicationException(TApplicationException.ExceptionType.MissingResult, "join_game failed: unknown result");
+      }
+
+      
+      #if SILVERLIGHT
+      public IAsyncResult Begin_join_map(AsyncCallback callback, object state, string sid, string map_name)
+      {
+        return send_join_map(callback, state, sid, map_name);
       }
 
       public bool End_join_map(IAsyncResult asyncResult)
@@ -177,26 +312,27 @@ namespace Client
 
       #endif
 
-      public bool join_map(string map_name)
+      public bool join_map(string sid, string map_name)
       {
         #if !SILVERLIGHT
-        send_join_map(map_name);
+        send_join_map(sid, map_name);
         return recv_join_map();
 
         #else
-        var asyncResult = Begin_join_map(null, null, map_name);
+        var asyncResult = Begin_join_map(null, null, sid, map_name);
         return End_join_map(asyncResult);
 
         #endif
       }
       #if SILVERLIGHT
-      public IAsyncResult send_join_map(AsyncCallback callback, object state, string map_name)
+      public IAsyncResult send_join_map(AsyncCallback callback, object state, string sid, string map_name)
       #else
-      public void send_join_map(string map_name)
+      public void send_join_map(string sid, string map_name)
       #endif
       {
         oprot_.WriteMessageBegin(new TMessage("join_map", TMessageType.Call, seqid_));
         join_map_args args = new join_map_args();
+        args.Sid = sid;
         args.Map_name = map_name;
         args.Write(oprot_);
         oprot_.WriteMessageEnd();
@@ -226,9 +362,9 @@ namespace Client
 
       
       #if SILVERLIGHT
-      public IAsyncResult Begin_try_move(AsyncCallback callback, object state, string key, double x, double y, double z)
+      public IAsyncResult Begin_try_move(AsyncCallback callback, object state, string sid, string key, double x, double y, double z)
       {
-        return send_try_move(callback, state, key, x, y, z);
+        return send_try_move(callback, state, sid, key, x, y, z);
       }
 
       public bool End_try_move(IAsyncResult asyncResult)
@@ -239,26 +375,27 @@ namespace Client
 
       #endif
 
-      public bool try_move(string key, double x, double y, double z)
+      public bool try_move(string sid, string key, double x, double y, double z)
       {
         #if !SILVERLIGHT
-        send_try_move(key, x, y, z);
+        send_try_move(sid, key, x, y, z);
         return recv_try_move();
 
         #else
-        var asyncResult = Begin_try_move(null, null, key, x, y, z);
+        var asyncResult = Begin_try_move(null, null, sid, key, x, y, z);
         return End_try_move(asyncResult);
 
         #endif
       }
       #if SILVERLIGHT
-      public IAsyncResult send_try_move(AsyncCallback callback, object state, string key, double x, double y, double z)
+      public IAsyncResult send_try_move(AsyncCallback callback, object state, string sid, string key, double x, double y, double z)
       #else
-      public void send_try_move(string key, double x, double y, double z)
+      public void send_try_move(string sid, string key, double x, double y, double z)
       #endif
       {
         oprot_.WriteMessageBegin(new TMessage("try_move", TMessageType.Call, seqid_));
         try_move_args args = new try_move_args();
+        args.Sid = sid;
         args.Key = key;
         args.X = x;
         args.Y = y;
@@ -291,9 +428,9 @@ namespace Client
 
       
       #if SILVERLIGHT
-      public IAsyncResult Begin_get_events(AsyncCallback callback, object state)
+      public IAsyncResult Begin_get_events(AsyncCallback callback, object state, string sid)
       {
-        return send_get_events(callback, state);
+        return send_get_events(callback, state, sid);
       }
 
       public List<game_event> End_get_events(IAsyncResult asyncResult)
@@ -304,26 +441,27 @@ namespace Client
 
       #endif
 
-      public List<game_event> get_events()
+      public List<game_event> get_events(string sid)
       {
         #if !SILVERLIGHT
-        send_get_events();
+        send_get_events(sid);
         return recv_get_events();
 
         #else
-        var asyncResult = Begin_get_events(null, null);
+        var asyncResult = Begin_get_events(null, null, sid);
         return End_get_events(asyncResult);
 
         #endif
       }
       #if SILVERLIGHT
-      public IAsyncResult send_get_events(AsyncCallback callback, object state)
+      public IAsyncResult send_get_events(AsyncCallback callback, object state, string sid)
       #else
-      public void send_get_events()
+      public void send_get_events(string sid)
       #endif
       {
         oprot_.WriteMessageBegin(new TMessage("get_events", TMessageType.Call, seqid_));
         get_events_args args = new get_events_args();
+        args.Sid = sid;
         args.Write(oprot_);
         oprot_.WriteMessageEnd();
         #if SILVERLIGHT
@@ -356,6 +494,8 @@ namespace Client
       {
         iface_ = iface;
         processMap_["auth"] = auth_Process;
+        processMap_["get_player_list"] = get_player_list_Process;
+        processMap_["join_game"] = join_game_Process;
         processMap_["join_map"] = join_map_Process;
         processMap_["try_move"] = try_move_Process;
         processMap_["get_events"] = get_events_Process;
@@ -399,7 +539,7 @@ namespace Client
         auth_result result = new auth_result();
         try
         {
-          result.Success = iface_.auth(args.Name);
+          result.Success = iface_.auth(args.Acc_name);
           oprot.WriteMessageBegin(new TMessage("auth", TMessageType.Reply, seqid)); 
           result.Write(oprot);
         }
@@ -419,6 +559,62 @@ namespace Client
         oprot.Transport.Flush();
       }
 
+      public void get_player_list_Process(int seqid, TProtocol iprot, TProtocol oprot)
+      {
+        get_player_list_args args = new get_player_list_args();
+        args.Read(iprot);
+        iprot.ReadMessageEnd();
+        get_player_list_result result = new get_player_list_result();
+        try
+        {
+          result.Success = iface_.get_player_list(args.Sid);
+          oprot.WriteMessageBegin(new TMessage("get_player_list", TMessageType.Reply, seqid)); 
+          result.Write(oprot);
+        }
+        catch (TTransportException)
+        {
+          throw;
+        }
+        catch (Exception ex)
+        {
+          Console.Error.WriteLine("Error occurred in processor:");
+          Console.Error.WriteLine(ex.ToString());
+          TApplicationException x = new TApplicationException        (TApplicationException.ExceptionType.InternalError," Internal error.");
+          oprot.WriteMessageBegin(new TMessage("get_player_list", TMessageType.Exception, seqid));
+          x.Write(oprot);
+        }
+        oprot.WriteMessageEnd();
+        oprot.Transport.Flush();
+      }
+
+      public void join_game_Process(int seqid, TProtocol iprot, TProtocol oprot)
+      {
+        join_game_args args = new join_game_args();
+        args.Read(iprot);
+        iprot.ReadMessageEnd();
+        join_game_result result = new join_game_result();
+        try
+        {
+          result.Success = iface_.join_game(args.Sid, args.Player_name);
+          oprot.WriteMessageBegin(new TMessage("join_game", TMessageType.Reply, seqid)); 
+          result.Write(oprot);
+        }
+        catch (TTransportException)
+        {
+          throw;
+        }
+        catch (Exception ex)
+        {
+          Console.Error.WriteLine("Error occurred in processor:");
+          Console.Error.WriteLine(ex.ToString());
+          TApplicationException x = new TApplicationException        (TApplicationException.ExceptionType.InternalError," Internal error.");
+          oprot.WriteMessageBegin(new TMessage("join_game", TMessageType.Exception, seqid));
+          x.Write(oprot);
+        }
+        oprot.WriteMessageEnd();
+        oprot.Transport.Flush();
+      }
+
       public void join_map_Process(int seqid, TProtocol iprot, TProtocol oprot)
       {
         join_map_args args = new join_map_args();
@@ -427,7 +623,7 @@ namespace Client
         join_map_result result = new join_map_result();
         try
         {
-          result.Success = iface_.join_map(args.Map_name);
+          result.Success = iface_.join_map(args.Sid, args.Map_name);
           oprot.WriteMessageBegin(new TMessage("join_map", TMessageType.Reply, seqid)); 
           result.Write(oprot);
         }
@@ -455,7 +651,7 @@ namespace Client
         try_move_result result = new try_move_result();
         try
         {
-          result.Success = iface_.try_move(args.Key, args.X, args.Y, args.Z);
+          result.Success = iface_.try_move(args.Sid, args.Key, args.X, args.Y, args.Z);
           oprot.WriteMessageBegin(new TMessage("try_move", TMessageType.Reply, seqid)); 
           result.Write(oprot);
         }
@@ -483,7 +679,7 @@ namespace Client
         get_events_result result = new get_events_result();
         try
         {
-          result.Success = iface_.get_events();
+          result.Success = iface_.get_events(args.Sid);
           oprot.WriteMessageBegin(new TMessage("get_events", TMessageType.Reply, seqid)); 
           result.Write(oprot);
         }
@@ -511,18 +707,18 @@ namespace Client
     #endif
     public partial class auth_args : TBase
     {
-      private string _name;
+      private string _acc_name;
 
-      public string Name
+      public string Acc_name
       {
         get
         {
-          return _name;
+          return _acc_name;
         }
         set
         {
-          __isset.name = true;
-          this._name = value;
+          __isset.acc_name = true;
+          this._acc_name = value;
         }
       }
 
@@ -532,7 +728,7 @@ namespace Client
       [Serializable]
       #endif
       public struct Isset {
-        public bool name;
+        public bool acc_name;
       }
 
       public auth_args() {
@@ -555,7 +751,7 @@ namespace Client
             {
               case 1:
                 if (field.Type == TType.String) {
-                  Name = iprot.ReadString();
+                  Acc_name = iprot.ReadString();
                 } else { 
                   TProtocolUtil.Skip(iprot, field.Type);
                 }
@@ -581,12 +777,12 @@ namespace Client
           TStruct struc = new TStruct("auth_args");
           oprot.WriteStructBegin(struc);
           TField field = new TField();
-          if (Name != null && __isset.name) {
-            field.Name = "name";
+          if (Acc_name != null && __isset.acc_name) {
+            field.Name = "acc_name";
             field.Type = TType.String;
             field.ID = 1;
             oprot.WriteFieldBegin(field);
-            oprot.WriteString(Name);
+            oprot.WriteString(Acc_name);
             oprot.WriteFieldEnd();
           }
           oprot.WriteFieldStop();
@@ -601,11 +797,11 @@ namespace Client
       public override string ToString() {
         StringBuilder __sb = new StringBuilder("auth_args(");
         bool __first = true;
-        if (Name != null && __isset.name) {
+        if (Acc_name != null && __isset.acc_name) {
           if(!__first) { __sb.Append(", "); }
           __first = false;
-          __sb.Append("Name: ");
-          __sb.Append(Name);
+          __sb.Append("Acc_name: ");
+          __sb.Append(Acc_name);
         }
         __sb.Append(")");
         return __sb.ToString();
@@ -618,6 +814,498 @@ namespace Client
     [Serializable]
     #endif
     public partial class auth_result : TBase
+    {
+      private string _success;
+
+      public string Success
+      {
+        get
+        {
+          return _success;
+        }
+        set
+        {
+          __isset.success = true;
+          this._success = value;
+        }
+      }
+
+
+      public Isset __isset;
+      #if !SILVERLIGHT
+      [Serializable]
+      #endif
+      public struct Isset {
+        public bool success;
+      }
+
+      public auth_result() {
+      }
+
+      public void Read (TProtocol iprot)
+      {
+        iprot.IncrementRecursionDepth();
+        try
+        {
+          TField field;
+          iprot.ReadStructBegin();
+          while (true)
+          {
+            field = iprot.ReadFieldBegin();
+            if (field.Type == TType.Stop) { 
+              break;
+            }
+            switch (field.ID)
+            {
+              case 0:
+                if (field.Type == TType.String) {
+                  Success = iprot.ReadString();
+                } else { 
+                  TProtocolUtil.Skip(iprot, field.Type);
+                }
+                break;
+              default: 
+                TProtocolUtil.Skip(iprot, field.Type);
+                break;
+            }
+            iprot.ReadFieldEnd();
+          }
+          iprot.ReadStructEnd();
+        }
+        finally
+        {
+          iprot.DecrementRecursionDepth();
+        }
+      }
+
+      public void Write(TProtocol oprot) {
+        oprot.IncrementRecursionDepth();
+        try
+        {
+          TStruct struc = new TStruct("auth_result");
+          oprot.WriteStructBegin(struc);
+          TField field = new TField();
+
+          if (this.__isset.success) {
+            if (Success != null) {
+              field.Name = "Success";
+              field.Type = TType.String;
+              field.ID = 0;
+              oprot.WriteFieldBegin(field);
+              oprot.WriteString(Success);
+              oprot.WriteFieldEnd();
+            }
+          }
+          oprot.WriteFieldStop();
+          oprot.WriteStructEnd();
+        }
+        finally
+        {
+          oprot.DecrementRecursionDepth();
+        }
+      }
+
+      public override string ToString() {
+        StringBuilder __sb = new StringBuilder("auth_result(");
+        bool __first = true;
+        if (Success != null && __isset.success) {
+          if(!__first) { __sb.Append(", "); }
+          __first = false;
+          __sb.Append("Success: ");
+          __sb.Append(Success);
+        }
+        __sb.Append(")");
+        return __sb.ToString();
+      }
+
+    }
+
+
+    #if !SILVERLIGHT
+    [Serializable]
+    #endif
+    public partial class get_player_list_args : TBase
+    {
+      private string _sid;
+
+      public string Sid
+      {
+        get
+        {
+          return _sid;
+        }
+        set
+        {
+          __isset.sid = true;
+          this._sid = value;
+        }
+      }
+
+
+      public Isset __isset;
+      #if !SILVERLIGHT
+      [Serializable]
+      #endif
+      public struct Isset {
+        public bool sid;
+      }
+
+      public get_player_list_args() {
+      }
+
+      public void Read (TProtocol iprot)
+      {
+        iprot.IncrementRecursionDepth();
+        try
+        {
+          TField field;
+          iprot.ReadStructBegin();
+          while (true)
+          {
+            field = iprot.ReadFieldBegin();
+            if (field.Type == TType.Stop) { 
+              break;
+            }
+            switch (field.ID)
+            {
+              case 1:
+                if (field.Type == TType.String) {
+                  Sid = iprot.ReadString();
+                } else { 
+                  TProtocolUtil.Skip(iprot, field.Type);
+                }
+                break;
+              default: 
+                TProtocolUtil.Skip(iprot, field.Type);
+                break;
+            }
+            iprot.ReadFieldEnd();
+          }
+          iprot.ReadStructEnd();
+        }
+        finally
+        {
+          iprot.DecrementRecursionDepth();
+        }
+      }
+
+      public void Write(TProtocol oprot) {
+        oprot.IncrementRecursionDepth();
+        try
+        {
+          TStruct struc = new TStruct("get_player_list_args");
+          oprot.WriteStructBegin(struc);
+          TField field = new TField();
+          if (Sid != null && __isset.sid) {
+            field.Name = "sid";
+            field.Type = TType.String;
+            field.ID = 1;
+            oprot.WriteFieldBegin(field);
+            oprot.WriteString(Sid);
+            oprot.WriteFieldEnd();
+          }
+          oprot.WriteFieldStop();
+          oprot.WriteStructEnd();
+        }
+        finally
+        {
+          oprot.DecrementRecursionDepth();
+        }
+      }
+
+      public override string ToString() {
+        StringBuilder __sb = new StringBuilder("get_player_list_args(");
+        bool __first = true;
+        if (Sid != null && __isset.sid) {
+          if(!__first) { __sb.Append(", "); }
+          __first = false;
+          __sb.Append("Sid: ");
+          __sb.Append(Sid);
+        }
+        __sb.Append(")");
+        return __sb.ToString();
+      }
+
+    }
+
+
+    #if !SILVERLIGHT
+    [Serializable]
+    #endif
+    public partial class get_player_list_result : TBase
+    {
+      private List<player_base_info> _success;
+
+      public List<player_base_info> Success
+      {
+        get
+        {
+          return _success;
+        }
+        set
+        {
+          __isset.success = true;
+          this._success = value;
+        }
+      }
+
+
+      public Isset __isset;
+      #if !SILVERLIGHT
+      [Serializable]
+      #endif
+      public struct Isset {
+        public bool success;
+      }
+
+      public get_player_list_result() {
+      }
+
+      public void Read (TProtocol iprot)
+      {
+        iprot.IncrementRecursionDepth();
+        try
+        {
+          TField field;
+          iprot.ReadStructBegin();
+          while (true)
+          {
+            field = iprot.ReadFieldBegin();
+            if (field.Type == TType.Stop) { 
+              break;
+            }
+            switch (field.ID)
+            {
+              case 0:
+                if (field.Type == TType.List) {
+                  {
+                    Success = new List<player_base_info>();
+                    TList _list4 = iprot.ReadListBegin();
+                    for( int _i5 = 0; _i5 < _list4.Count; ++_i5)
+                    {
+                      player_base_info _elem6;
+                      _elem6 = new player_base_info();
+                      _elem6.Read(iprot);
+                      Success.Add(_elem6);
+                    }
+                    iprot.ReadListEnd();
+                  }
+                } else { 
+                  TProtocolUtil.Skip(iprot, field.Type);
+                }
+                break;
+              default: 
+                TProtocolUtil.Skip(iprot, field.Type);
+                break;
+            }
+            iprot.ReadFieldEnd();
+          }
+          iprot.ReadStructEnd();
+        }
+        finally
+        {
+          iprot.DecrementRecursionDepth();
+        }
+      }
+
+      public void Write(TProtocol oprot) {
+        oprot.IncrementRecursionDepth();
+        try
+        {
+          TStruct struc = new TStruct("get_player_list_result");
+          oprot.WriteStructBegin(struc);
+          TField field = new TField();
+
+          if (this.__isset.success) {
+            if (Success != null) {
+              field.Name = "Success";
+              field.Type = TType.List;
+              field.ID = 0;
+              oprot.WriteFieldBegin(field);
+              {
+                oprot.WriteListBegin(new TList(TType.Struct, Success.Count));
+                foreach (player_base_info _iter7 in Success)
+                {
+                  _iter7.Write(oprot);
+                }
+                oprot.WriteListEnd();
+              }
+              oprot.WriteFieldEnd();
+            }
+          }
+          oprot.WriteFieldStop();
+          oprot.WriteStructEnd();
+        }
+        finally
+        {
+          oprot.DecrementRecursionDepth();
+        }
+      }
+
+      public override string ToString() {
+        StringBuilder __sb = new StringBuilder("get_player_list_result(");
+        bool __first = true;
+        if (Success != null && __isset.success) {
+          if(!__first) { __sb.Append(", "); }
+          __first = false;
+          __sb.Append("Success: ");
+          __sb.Append(Success);
+        }
+        __sb.Append(")");
+        return __sb.ToString();
+      }
+
+    }
+
+
+    #if !SILVERLIGHT
+    [Serializable]
+    #endif
+    public partial class join_game_args : TBase
+    {
+      private string _sid;
+      private string _player_name;
+
+      public string Sid
+      {
+        get
+        {
+          return _sid;
+        }
+        set
+        {
+          __isset.sid = true;
+          this._sid = value;
+        }
+      }
+
+      public string Player_name
+      {
+        get
+        {
+          return _player_name;
+        }
+        set
+        {
+          __isset.player_name = true;
+          this._player_name = value;
+        }
+      }
+
+
+      public Isset __isset;
+      #if !SILVERLIGHT
+      [Serializable]
+      #endif
+      public struct Isset {
+        public bool sid;
+        public bool player_name;
+      }
+
+      public join_game_args() {
+      }
+
+      public void Read (TProtocol iprot)
+      {
+        iprot.IncrementRecursionDepth();
+        try
+        {
+          TField field;
+          iprot.ReadStructBegin();
+          while (true)
+          {
+            field = iprot.ReadFieldBegin();
+            if (field.Type == TType.Stop) { 
+              break;
+            }
+            switch (field.ID)
+            {
+              case 1:
+                if (field.Type == TType.String) {
+                  Sid = iprot.ReadString();
+                } else { 
+                  TProtocolUtil.Skip(iprot, field.Type);
+                }
+                break;
+              case 2:
+                if (field.Type == TType.String) {
+                  Player_name = iprot.ReadString();
+                } else { 
+                  TProtocolUtil.Skip(iprot, field.Type);
+                }
+                break;
+              default: 
+                TProtocolUtil.Skip(iprot, field.Type);
+                break;
+            }
+            iprot.ReadFieldEnd();
+          }
+          iprot.ReadStructEnd();
+        }
+        finally
+        {
+          iprot.DecrementRecursionDepth();
+        }
+      }
+
+      public void Write(TProtocol oprot) {
+        oprot.IncrementRecursionDepth();
+        try
+        {
+          TStruct struc = new TStruct("join_game_args");
+          oprot.WriteStructBegin(struc);
+          TField field = new TField();
+          if (Sid != null && __isset.sid) {
+            field.Name = "sid";
+            field.Type = TType.String;
+            field.ID = 1;
+            oprot.WriteFieldBegin(field);
+            oprot.WriteString(Sid);
+            oprot.WriteFieldEnd();
+          }
+          if (Player_name != null && __isset.player_name) {
+            field.Name = "player_name";
+            field.Type = TType.String;
+            field.ID = 2;
+            oprot.WriteFieldBegin(field);
+            oprot.WriteString(Player_name);
+            oprot.WriteFieldEnd();
+          }
+          oprot.WriteFieldStop();
+          oprot.WriteStructEnd();
+        }
+        finally
+        {
+          oprot.DecrementRecursionDepth();
+        }
+      }
+
+      public override string ToString() {
+        StringBuilder __sb = new StringBuilder("join_game_args(");
+        bool __first = true;
+        if (Sid != null && __isset.sid) {
+          if(!__first) { __sb.Append(", "); }
+          __first = false;
+          __sb.Append("Sid: ");
+          __sb.Append(Sid);
+        }
+        if (Player_name != null && __isset.player_name) {
+          if(!__first) { __sb.Append(", "); }
+          __first = false;
+          __sb.Append("Player_name: ");
+          __sb.Append(Player_name);
+        }
+        __sb.Append(")");
+        return __sb.ToString();
+      }
+
+    }
+
+
+    #if !SILVERLIGHT
+    [Serializable]
+    #endif
+    public partial class join_game_result : TBase
     {
       private bool _success;
 
@@ -643,7 +1331,7 @@ namespace Client
         public bool success;
       }
 
-      public auth_result() {
+      public join_game_result() {
       }
 
       public void Read (TProtocol iprot)
@@ -686,7 +1374,7 @@ namespace Client
         oprot.IncrementRecursionDepth();
         try
         {
-          TStruct struc = new TStruct("auth_result");
+          TStruct struc = new TStruct("join_game_result");
           oprot.WriteStructBegin(struc);
           TField field = new TField();
 
@@ -708,7 +1396,7 @@ namespace Client
       }
 
       public override string ToString() {
-        StringBuilder __sb = new StringBuilder("auth_result(");
+        StringBuilder __sb = new StringBuilder("join_game_result(");
         bool __first = true;
         if (__isset.success) {
           if(!__first) { __sb.Append(", "); }
@@ -728,7 +1416,21 @@ namespace Client
     #endif
     public partial class join_map_args : TBase
     {
+      private string _sid;
       private string _map_name;
+
+      public string Sid
+      {
+        get
+        {
+          return _sid;
+        }
+        set
+        {
+          __isset.sid = true;
+          this._sid = value;
+        }
+      }
 
       public string Map_name
       {
@@ -749,6 +1451,7 @@ namespace Client
       [Serializable]
       #endif
       public struct Isset {
+        public bool sid;
         public bool map_name;
       }
 
@@ -771,6 +1474,13 @@ namespace Client
             switch (field.ID)
             {
               case 1:
+                if (field.Type == TType.String) {
+                  Sid = iprot.ReadString();
+                } else { 
+                  TProtocolUtil.Skip(iprot, field.Type);
+                }
+                break;
+              case 2:
                 if (field.Type == TType.String) {
                   Map_name = iprot.ReadString();
                 } else { 
@@ -798,10 +1508,18 @@ namespace Client
           TStruct struc = new TStruct("join_map_args");
           oprot.WriteStructBegin(struc);
           TField field = new TField();
+          if (Sid != null && __isset.sid) {
+            field.Name = "sid";
+            field.Type = TType.String;
+            field.ID = 1;
+            oprot.WriteFieldBegin(field);
+            oprot.WriteString(Sid);
+            oprot.WriteFieldEnd();
+          }
           if (Map_name != null && __isset.map_name) {
             field.Name = "map_name";
             field.Type = TType.String;
-            field.ID = 1;
+            field.ID = 2;
             oprot.WriteFieldBegin(field);
             oprot.WriteString(Map_name);
             oprot.WriteFieldEnd();
@@ -818,6 +1536,12 @@ namespace Client
       public override string ToString() {
         StringBuilder __sb = new StringBuilder("join_map_args(");
         bool __first = true;
+        if (Sid != null && __isset.sid) {
+          if(!__first) { __sb.Append(", "); }
+          __first = false;
+          __sb.Append("Sid: ");
+          __sb.Append(Sid);
+        }
         if (Map_name != null && __isset.map_name) {
           if(!__first) { __sb.Append(", "); }
           __first = false;
@@ -945,10 +1669,24 @@ namespace Client
     #endif
     public partial class try_move_args : TBase
     {
+      private string _sid;
       private string _key;
       private double _x;
       private double _y;
       private double _z;
+
+      public string Sid
+      {
+        get
+        {
+          return _sid;
+        }
+        set
+        {
+          __isset.sid = true;
+          this._sid = value;
+        }
+      }
 
       public string Key
       {
@@ -1008,6 +1746,7 @@ namespace Client
       [Serializable]
       #endif
       public struct Isset {
+        public bool sid;
         public bool key;
         public bool x;
         public bool y;
@@ -1034,26 +1773,33 @@ namespace Client
             {
               case 1:
                 if (field.Type == TType.String) {
-                  Key = iprot.ReadString();
+                  Sid = iprot.ReadString();
                 } else { 
                   TProtocolUtil.Skip(iprot, field.Type);
                 }
                 break;
               case 2:
-                if (field.Type == TType.Double) {
-                  X = iprot.ReadDouble();
+                if (field.Type == TType.String) {
+                  Key = iprot.ReadString();
                 } else { 
                   TProtocolUtil.Skip(iprot, field.Type);
                 }
                 break;
               case 3:
                 if (field.Type == TType.Double) {
-                  Y = iprot.ReadDouble();
+                  X = iprot.ReadDouble();
                 } else { 
                   TProtocolUtil.Skip(iprot, field.Type);
                 }
                 break;
               case 4:
+                if (field.Type == TType.Double) {
+                  Y = iprot.ReadDouble();
+                } else { 
+                  TProtocolUtil.Skip(iprot, field.Type);
+                }
+                break;
+              case 5:
                 if (field.Type == TType.Double) {
                   Z = iprot.ReadDouble();
                 } else { 
@@ -1081,10 +1827,18 @@ namespace Client
           TStruct struc = new TStruct("try_move_args");
           oprot.WriteStructBegin(struc);
           TField field = new TField();
+          if (Sid != null && __isset.sid) {
+            field.Name = "sid";
+            field.Type = TType.String;
+            field.ID = 1;
+            oprot.WriteFieldBegin(field);
+            oprot.WriteString(Sid);
+            oprot.WriteFieldEnd();
+          }
           if (Key != null && __isset.key) {
             field.Name = "key";
             field.Type = TType.String;
-            field.ID = 1;
+            field.ID = 2;
             oprot.WriteFieldBegin(field);
             oprot.WriteString(Key);
             oprot.WriteFieldEnd();
@@ -1092,7 +1846,7 @@ namespace Client
           if (__isset.x) {
             field.Name = "x";
             field.Type = TType.Double;
-            field.ID = 2;
+            field.ID = 3;
             oprot.WriteFieldBegin(field);
             oprot.WriteDouble(X);
             oprot.WriteFieldEnd();
@@ -1100,7 +1854,7 @@ namespace Client
           if (__isset.y) {
             field.Name = "y";
             field.Type = TType.Double;
-            field.ID = 3;
+            field.ID = 4;
             oprot.WriteFieldBegin(field);
             oprot.WriteDouble(Y);
             oprot.WriteFieldEnd();
@@ -1108,7 +1862,7 @@ namespace Client
           if (__isset.z) {
             field.Name = "z";
             field.Type = TType.Double;
-            field.ID = 4;
+            field.ID = 5;
             oprot.WriteFieldBegin(field);
             oprot.WriteDouble(Z);
             oprot.WriteFieldEnd();
@@ -1125,6 +1879,12 @@ namespace Client
       public override string ToString() {
         StringBuilder __sb = new StringBuilder("try_move_args(");
         bool __first = true;
+        if (Sid != null && __isset.sid) {
+          if(!__first) { __sb.Append(", "); }
+          __first = false;
+          __sb.Append("Sid: ");
+          __sb.Append(Sid);
+        }
         if (Key != null && __isset.key) {
           if(!__first) { __sb.Append(", "); }
           __first = false;
@@ -1270,6 +2030,29 @@ namespace Client
     #endif
     public partial class get_events_args : TBase
     {
+      private string _sid;
+
+      public string Sid
+      {
+        get
+        {
+          return _sid;
+        }
+        set
+        {
+          __isset.sid = true;
+          this._sid = value;
+        }
+      }
+
+
+      public Isset __isset;
+      #if !SILVERLIGHT
+      [Serializable]
+      #endif
+      public struct Isset {
+        public bool sid;
+      }
 
       public get_events_args() {
       }
@@ -1289,6 +2072,13 @@ namespace Client
             }
             switch (field.ID)
             {
+              case 1:
+                if (field.Type == TType.String) {
+                  Sid = iprot.ReadString();
+                } else { 
+                  TProtocolUtil.Skip(iprot, field.Type);
+                }
+                break;
               default: 
                 TProtocolUtil.Skip(iprot, field.Type);
                 break;
@@ -1309,6 +2099,15 @@ namespace Client
         {
           TStruct struc = new TStruct("get_events_args");
           oprot.WriteStructBegin(struc);
+          TField field = new TField();
+          if (Sid != null && __isset.sid) {
+            field.Name = "sid";
+            field.Type = TType.String;
+            field.ID = 1;
+            oprot.WriteFieldBegin(field);
+            oprot.WriteString(Sid);
+            oprot.WriteFieldEnd();
+          }
           oprot.WriteFieldStop();
           oprot.WriteStructEnd();
         }
@@ -1320,6 +2119,13 @@ namespace Client
 
       public override string ToString() {
         StringBuilder __sb = new StringBuilder("get_events_args(");
+        bool __first = true;
+        if (Sid != null && __isset.sid) {
+          if(!__first) { __sb.Append(", "); }
+          __first = false;
+          __sb.Append("Sid: ");
+          __sb.Append(Sid);
+        }
         __sb.Append(")");
         return __sb.ToString();
       }
@@ -1378,13 +2184,13 @@ namespace Client
                 if (field.Type == TType.List) {
                   {
                     Success = new List<game_event>();
-                    TList _list4 = iprot.ReadListBegin();
-                    for( int _i5 = 0; _i5 < _list4.Count; ++_i5)
+                    TList _list8 = iprot.ReadListBegin();
+                    for( int _i9 = 0; _i9 < _list8.Count; ++_i9)
                     {
-                      game_event _elem6;
-                      _elem6 = new game_event();
-                      _elem6.Read(iprot);
-                      Success.Add(_elem6);
+                      game_event _elem10;
+                      _elem10 = new game_event();
+                      _elem10.Read(iprot);
+                      Success.Add(_elem10);
                     }
                     iprot.ReadListEnd();
                   }
@@ -1422,9 +2228,9 @@ namespace Client
               oprot.WriteFieldBegin(field);
               {
                 oprot.WriteListBegin(new TList(TType.Struct, Success.Count));
-                foreach (game_event _iter7 in Success)
+                foreach (game_event _iter11 in Success)
                 {
-                  _iter7.Write(oprot);
+                  _iter11.Write(oprot);
                 }
                 oprot.WriteListEnd();
               }

@@ -8,12 +8,13 @@ using System.Threading.Tasks;
 
 namespace Grains1
 {
-    public class BaseMap : IMap
+    public class BaseMap : Grain, IMap
     {
         Dictionary<string, baseMoveObject> AllObj = new Dictionary<string, baseMoveObject>();
         public Task<bool> Leave(string objKey)
         {
-            var r= AllObj.Remove(objKey);
+            var r = AllObj.Remove(objKey);
+            Console.WriteLine($"{this.GetPrimaryKeyString()}: {objKey} left");
             return Task.FromResult(r);
         }
 
@@ -22,7 +23,7 @@ namespace Grains1
             //给每个客户端广播所有人的信息,明显,这里需要优化
             foreach (var item in AllObj)
             {
-                var p = GrainClient.GrainFactory.GetGrain<IPlayer>(item.Key);                
+                var p = GrainClient.GrainFactory.GetGrain<IPlayer>(item.Key);
                 SyncAllObjPosToPlayer(p);
             }
             return Task.CompletedTask;
@@ -36,13 +37,14 @@ namespace Grains1
             }
         }
 
-        public Task<bool> TryJoin(string objkey, string keyData)
+        public Task<bool> TryJoin(string objKey, string keyData)
         {
             try
             {
                 var bmo = new baseMoveObject() { Data = keyData };
                 //todo reset bornpos
-                AllObj.Add(objkey, bmo);
+                AllObj.Add(objKey, bmo);
+                Console.WriteLine($"{this.GetPrimaryKeyString()}: {objKey} joined");
                 return Task.FromResult(true);
             }
             catch (Exception ex)
@@ -52,7 +54,7 @@ namespace Grains1
             return Task.FromResult(true);
         }
 
-        public Task<bool> TryMove(string objectKey, float x, float y, float z)
+        public Task<bool> TryMove(string objectKey, double x, double y, double z)
         {
             if (AllObj.TryGetValue(objectKey, out var obj))
             {
@@ -67,11 +69,11 @@ namespace Grains1
 
     }
 
-    public class baseMoveObject 
+    public class baseMoveObject
     {
-        public float x { get; set; }
-        public float y { get; set; }
-        public float z { get; set; }
+        public double x { get; set; }
+        public double y { get; set; }
+        public double z { get; set; }
         public bool LockPos { get; set; }
         public string Data { get; set; }
     }

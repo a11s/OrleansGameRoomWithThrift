@@ -8,7 +8,8 @@
         Title="MainWindow" Height="350" Width="525">
     <Grid>
         <Button x:Name="button_login" Content="login" HorizontalAlignment="Left" VerticalAlignment="Top" Width="75" Click="button_login_Click" Height="33"/>
-        <Button x:Name="button_enter" Content="StandOnMap" HorizontalAlignment="Left" VerticalAlignment="Top" Width="96" Margin="90,0,0,0" Height="33" Click="button_enter_Click"/>
+        <Button x:Name="button_enter" Content="StandOnMap" HorizontalAlignment="Left" VerticalAlignment="Top" Width="96" Margin="215,0,0,0" Height="33" Click="button_enter_Click"/>
+        <Button x:Name="button_get_players" Content="GetPlayers" HorizontalAlignment="Left" VerticalAlignment="Top" Width="96" Margin="92,0,0,0" Height="33" Click="button_get_players_Click"/>
 
     </Grid>
 </Window>

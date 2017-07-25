@@ -34,10 +34,13 @@ namespace testClient
         private void button_auth_Click(object sender, RoutedEventArgs e)
         {
             var r = Global.Network.auth(textbox_name.Text);
-            Global.IsAuthSuccess = r;
+            Global.IsAuthSuccess = !string.IsNullOrWhiteSpace(r);
+            if (Global.IsAuthSuccess)
+            {
+                Global.SessionId = r;
+            }
 
-
-            button_auth.IsEnabled = !r;
+            button_auth.IsEnabled = !Global.IsAuthSuccess;
 
         }
     }

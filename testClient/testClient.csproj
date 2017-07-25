@@ -61,6 +61,8 @@
     <Compile Include="thriftinterface\event_move.cs" />
     <Compile Include="thriftinterface\game_event.cs" />
     <Compile Include="thriftinterface\GW.cs" />
+    <Compile Include="thriftinterface\player_base_info.cs" />
+    <Compile Include="thriftinterface\vector3.cs" />
     <Compile Include="WinLogin.xaml.cs">
       <DependentUpon>WinLogin.xaml</DependentUpon>
     </Compile>

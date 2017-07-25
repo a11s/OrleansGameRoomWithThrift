@@ -13,6 +13,7 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 using Client;
+using System.Diagnostics;
 
 namespace testClient
 {
@@ -28,7 +29,7 @@ namespace testClient
 
         private void button_login_Click(object sender, RoutedEventArgs e)
         {
-            Global.STT = new SingleThreadTimer(this.Dispatcher, OnPulse);
+            Global.InitTimer(this.Dispatcher, OnPulse);
             WinLogin wl = new WinLogin();
             wl.ShowDialog();
         }
@@ -37,13 +38,13 @@ namespace testClient
         /// </summary>
         void OnPulse()
         {
-            var events = Global.Network.get_events();
-            for (int i = 0; i < events.Count; i++)
+            var events = Global.Network?.get_events(Global.SessionId);
+            for (int i = 0; i < events?.Count; i++)
             {
                 var evt = events[i];
                 DoMoves(evt.Moves);
             }
-            events.Clear();
+            events?.Clear();
         }
 
         private void DoMoves(List<event_move> moves)
@@ -53,8 +54,17 @@ namespace testClient
 
         private void button_enter_Click(object sender, RoutedEventArgs e)
         {
-            var r = Global.Network.join_map("map1");
+            var r = Global.Network.join_game(Global.SessionId, Global.CurrentPlayerBaseInfo.Player_name);
             button_enter.IsEnabled = !r;
+            this.Title = "";
+        }
+
+        private void button_get_players_Click(object sender, RoutedEventArgs e)
+        {
+            var players = Global.Network.get_player_list(Global.SessionId);
+            Debug.Assert(players.Count > 0);
+            Global.CurrentPlayerBaseInfo = players[0];
+            button_get_players.IsEnabled = players.Count < 1;
         }
     }
 }

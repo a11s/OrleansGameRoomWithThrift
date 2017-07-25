@@ -46,7 +46,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="IGateWay.cs" />
-    <Compile Include="IGrain1.cs" />
+    <Compile Include="IGrainGame.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

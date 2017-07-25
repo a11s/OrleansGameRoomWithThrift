@@ -51,17 +51,25 @@ namespace testClient
     }
     public class Global
     {
-        private static Timer innerTimer = new Timer(
-            (a) =>
-                {
-                    STT?.Pulse();
-                },
-            null, TimeSpan.FromMilliseconds(100), TimeSpan.FromSeconds(100));
+        private static Timer innerTimer = null;
 
-        public static SingleThreadTimer STT = null;
+        private static SingleThreadTimer STT = null;
 
+        public static void InitTimer(Dispatcher dispatcher, Action a)
+        {
+            STT = new SingleThreadTimer(dispatcher, a);
+            innerTimer = new Timer(
+            (aaa) =>
+            {
+                STT?.Pulse();
+            },
+            null, TimeSpan.FromMilliseconds(100), TimeSpan.FromSeconds(1));
+
+        }
         public static GW.Client Network { get; private set; }
         public static bool IsAuthSuccess { get; internal set; }
+        public static string SessionId { get; internal set; }
+        public static player_base_info CurrentPlayerBaseInfo { get; internal set; }
 
         public static GW.Client GetNetwork(string text)
         {
