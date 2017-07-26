@@ -198,7 +198,7 @@
     <Compile Include="GHelper.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="thriftinterface\ClientProcessor.cs" />
+    <Compile Include="ClientProcessor.cs" />
     <Compile Include="thriftinterface\event_move.cs" />
     <Compile Include="thriftinterface\game_event.cs" />
     <Compile Include="thriftinterface\GW.cs" />
