@@ -11,6 +11,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Grains1", "Grains1\Grains1.
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "testClient", "testClient\testClient.csproj", "{098FF54E-0D2D-4B45-96B4-75C3DF07AFBD}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AppGateway", "AppGateway\AppGateway.csproj", "{EA36A71F-188E-4CA7-8266-2AA971AB99B0}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -33,6 +35,10 @@ Global
 		{098FF54E-0D2D-4B45-96B4-75C3DF07AFBD}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{098FF54E-0D2D-4B45-96B4-75C3DF07AFBD}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{098FF54E-0D2D-4B45-96B4-75C3DF07AFBD}.Release|Any CPU.Build.0 = Release|Any CPU
+		{EA36A71F-188E-4CA7-8266-2AA971AB99B0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{EA36A71F-188E-4CA7-8266-2AA971AB99B0}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{EA36A71F-188E-4CA7-8266-2AA971AB99B0}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{EA36A71F-188E-4CA7-8266-2AA971AB99B0}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

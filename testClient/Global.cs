@@ -77,7 +77,7 @@ namespace testClient
             var ip = arr[0];
             int port = int.Parse(arr[1]);
 
-            TTransport transport = new TSocket(ip, port, 1000);
+            TTransport transport = new TSocket(ip, port, 100000);
             TProtocol protocol = new TBinaryProtocol(transport);
             try
             {

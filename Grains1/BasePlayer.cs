@@ -1,4 +1,5 @@
 ﻿using GameInterface;
+using GrainInterfaces1;
 using Orleans;
 using System;
 using System.Collections.Generic;
@@ -8,21 +9,8 @@ using System.Threading.Tasks;
 
 namespace Grains1
 {
-    [Serializable]
-    public class PlayerBaseInfo : IPlayerBaseInfo
-    {
-        public string PlayerName { get; set; }
-        public string LastMapId { get; set; }
-        public IVector3 LastMapPos { get; set; }
-        public string AccountId { get; set; }
-    }
-    [Serializable]
-    public class Vector3 : IVector3
-    {
-        public double x { get; set; }
-        public double y { get; set; }
-        public double z { get; set; }
-    }
+    
+
     public class BasePlayer : Grain, IPlayer
     {
 
@@ -58,6 +46,8 @@ namespace Grains1
             List<IPlayerBaseInfo> list = new List<IPlayerBaseInfo>();
             list.Add(new PlayerBaseInfo() { LastMapId = "map1", LastMapPos = new Vector3(), PlayerName = this.CurrentPlayerName, AccountId = this.AccountId });
             AllPlayersBaseInfo = list;
+
+            Console.WriteLine($"{this.GetPrimaryKeyString()}: player {nameof(GetPlayerBaseInfo)}  ");
             return Task.FromResult(list.ToArray());
         }
 
@@ -72,11 +62,13 @@ namespace Grains1
             }
             CurrentPlayerBaseInfo = pbi as PlayerBaseInfo;
             CurrentPlayerName = pbi.PlayerName;
-
+            Console.WriteLine("player joingame");
             var gMap = this.GrainFactory.GetGrain<IMap>(pbi.LastMapId);
-            var joinres = gMap.TryJoin(CurrentPlayerName, "").Result;
+            //var joinres = gMap.TryJoin(CurrentPlayerName, "").Result;
 
-            return Task.FromResult(true);
+            //return Task.FromResult(true);
+            Console.WriteLine($"{gMap.GetPrimaryKeyString()}: player {CurrentMapName} join map ");
+            return gMap.TryJoin(CurrentPlayerName, "");
         }
 
         public Task MoveTo(string objKey, double x, double y, double z)
@@ -114,6 +106,7 @@ namespace Grains1
             //{
             //    //map dont want you go to that place
             //}
+            Console.WriteLine($"{map.GetPrimaryKeyString()}: player {nameof(TryMove)}  ");
             return succ;
         }
         #endregion
