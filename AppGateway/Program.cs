@@ -25,30 +25,19 @@ namespace AppGateway
             GrainClient.Initialize(cfg);
             var gw = GrainClient.GrainFactory.GetGrain<IGateway>("gw1");
             var succ = gw.Start().Result;
-
-            initThrift(gw);
-
+            initThrift(gw);//thrift的全都在这里
             Console.WriteLine($"Gateway {gw.GetPrimaryKeyString()} READY");
             Console.WriteLine("press anykey to exit");
             Console.ReadKey();
-
-
-
         }
-
-
         private static void initThrift(IGateway gw)
         {
             G.DefaultGateway = gw;
             var cp = new ClientProcessor(gw);
             var t_processor = new Client.GW.Processor(cp);
             var transport = new Thrift.Transport.TServerSocket(6325, 100000, true);
-
-            //TThreadedServer ps = new TThreadedServer(t_processor, transport);
             System.Threading.ThreadPool.SetMinThreads(1, 0);
             var tps = new Thrift.Server.TThreadPoolServer(t_processor, transport);
-            //var ss = new Thrift.Server.TSimpleServer(t_processor, transport);
-
             Task.Run(() =>
             {
                 Console.WriteLine($"{gw.GetPrimaryKeyString()}:Task: thrift started");
@@ -56,14 +45,11 @@ namespace AppGateway
                 Console.WriteLine($"ThreadPool maxwt:{wt} maxcpt:{cpt}");
                 tps.Serve();
             });
-
             Task.Run(() =>
-            {
-
+            {//心跳检测,如果客户端长时间没有发起thrift请求,那么回收token,类似udp判断玩家是否断线
                 while (true)
                 {
-                    cp.CheckHeartbeat();
-                    Thread.Sleep(1000);
+                    cp.CheckHeartbeat(); Thread.Sleep(1000);
                 }
             });
         }
