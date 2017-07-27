@@ -1080,13 +1080,13 @@ namespace Client
                 if (field.Type == TType.List) {
                   {
                     Success = new List<player_base_info>();
-                    TList _list4 = iprot.ReadListBegin();
-                    for( int _i5 = 0; _i5 < _list4.Count; ++_i5)
+                    TList _list8 = iprot.ReadListBegin();
+                    for( int _i9 = 0; _i9 < _list8.Count; ++_i9)
                     {
-                      player_base_info _elem6;
-                      _elem6 = new player_base_info();
-                      _elem6.Read(iprot);
-                      Success.Add(_elem6);
+                      player_base_info _elem10;
+                      _elem10 = new player_base_info();
+                      _elem10.Read(iprot);
+                      Success.Add(_elem10);
                     }
                     iprot.ReadListEnd();
                   }
@@ -1124,9 +1124,9 @@ namespace Client
               oprot.WriteFieldBegin(field);
               {
                 oprot.WriteListBegin(new TList(TType.Struct, Success.Count));
-                foreach (player_base_info _iter7 in Success)
+                foreach (player_base_info _iter11 in Success)
                 {
-                  _iter7.Write(oprot);
+                  _iter11.Write(oprot);
                 }
                 oprot.WriteListEnd();
               }
@@ -2184,13 +2184,13 @@ namespace Client
                 if (field.Type == TType.List) {
                   {
                     Success = new List<game_event>();
-                    TList _list8 = iprot.ReadListBegin();
-                    for( int _i9 = 0; _i9 < _list8.Count; ++_i9)
+                    TList _list12 = iprot.ReadListBegin();
+                    for( int _i13 = 0; _i13 < _list12.Count; ++_i13)
                     {
-                      game_event _elem10;
-                      _elem10 = new game_event();
-                      _elem10.Read(iprot);
-                      Success.Add(_elem10);
+                      game_event _elem14;
+                      _elem14 = new game_event();
+                      _elem14.Read(iprot);
+                      Success.Add(_elem14);
                     }
                     iprot.ReadListEnd();
                   }
@@ -2228,9 +2228,9 @@ namespace Client
               oprot.WriteFieldBegin(field);
               {
                 oprot.WriteListBegin(new TList(TType.Struct, Success.Count));
-                foreach (game_event _iter11 in Success)
+                foreach (game_event _iter15 in Success)
                 {
-                  _iter11.Write(oprot);
+                  _iter15.Write(oprot);
                 }
                 oprot.WriteListEnd();
               }

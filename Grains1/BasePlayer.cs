@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace Grains1
 {
-    
+
 
     public class BasePlayer : Grain, IPlayer
     {
@@ -35,7 +35,8 @@ namespace Grains1
         public override Task OnActivateAsync()
         {
             //load from db
-
+            MapPos = new Vector3();
+            
             CurrentPlayerName = this.GetPrimaryKeyString();
             AccountId = this.GetPrimaryKeyString();
             return base.OnActivateAsync();
@@ -64,11 +65,21 @@ namespace Grains1
             CurrentPlayerName = pbi.PlayerName;
             Console.WriteLine("player joingame");
             var gMap = this.GrainFactory.GetGrain<IMap>(pbi.LastMapId);
-            //var joinres = gMap.TryJoin(CurrentPlayerName, "").Result;
 
-            //return Task.FromResult(true);
+
+
             Console.WriteLine($"{gMap.GetPrimaryKeyString()}: player {CurrentMapName} join map ");
-            return gMap.TryJoin(CurrentPlayerName, "");
+
+            var t = gMap.TryJoin(CurrentPlayerName, string.Empty);
+            var t2 = t.ContinueWith<bool>((a) =>
+             {
+                 if (t.Result)
+                 {
+                     CurrentMapName = gMap.GetPrimaryKeyString();
+                 }
+                 return t.Result;
+             });
+            return t2;
         }
 
         public Task MoveTo(string objKey, double x, double y, double z)
@@ -108,6 +119,21 @@ namespace Grains1
             //}
             Console.WriteLine($"{map.GetPrimaryKeyString()}: player {nameof(TryMove)}  ");
             return succ;
+        }
+
+        public Task<bool> LeftGame(string playerName)
+        {
+            var pbi = CurrentPlayerBaseInfo;
+            if (pbi == null)
+            {
+                return Task.FromResult(false);
+            }
+            var gMap = this.GrainFactory.GetGrain<IMap>(pbi.LastMapId);
+            var r = gMap.Leave(playerName);
+            pbi.LastMapId = gMap.GetPrimaryKeyString();
+            pbi.LastMapPos = MapPos;
+            this.CurrentMapName = string.Empty;           
+            return r;
         }
         #endregion
     }

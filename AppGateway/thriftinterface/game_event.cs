@@ -24,6 +24,7 @@ namespace Client
   public partial class game_event : TBase
   {
     private List<event_move> _moves;
+    private List<string> _messages;
 
     public List<event_move> Moves
     {
@@ -38,6 +39,19 @@ namespace Client
       }
     }
 
+    public List<string> Messages
+    {
+      get
+      {
+        return _messages;
+      }
+      set
+      {
+        __isset.messages = true;
+        this._messages = value;
+      }
+    }
+
 
     public Isset __isset;
     #if !SILVERLIGHT
@@ -45,6 +59,7 @@ namespace Client
     #endif
     public struct Isset {
       public bool moves;
+      public bool messages;
     }
 
     public game_event() {
@@ -83,6 +98,23 @@ namespace Client
                 TProtocolUtil.Skip(iprot, field.Type);
               }
               break;
+            case 2:
+              if (field.Type == TType.List) {
+                {
+                  Messages = new List<string>();
+                  TList _list3 = iprot.ReadListBegin();
+                  for( int _i4 = 0; _i4 < _list3.Count; ++_i4)
+                  {
+                    string _elem5;
+                    _elem5 = iprot.ReadString();
+                    Messages.Add(_elem5);
+                  }
+                  iprot.ReadListEnd();
+                }
+              } else { 
+                TProtocolUtil.Skip(iprot, field.Type);
+              }
+              break;
             default: 
               TProtocolUtil.Skip(iprot, field.Type);
               break;
@@ -111,9 +143,24 @@ namespace Client
           oprot.WriteFieldBegin(field);
           {
             oprot.WriteListBegin(new TList(TType.Struct, Moves.Count));
-            foreach (event_move _iter3 in Moves)
+            foreach (event_move _iter6 in Moves)
             {
-              _iter3.Write(oprot);
+              _iter6.Write(oprot);
+            }
+            oprot.WriteListEnd();
+          }
+          oprot.WriteFieldEnd();
+        }
+        if (Messages != null && __isset.messages) {
+          field.Name = "messages";
+          field.Type = TType.List;
+          field.ID = 2;
+          oprot.WriteFieldBegin(field);
+          {
+            oprot.WriteListBegin(new TList(TType.String, Messages.Count));
+            foreach (string _iter7 in Messages)
+            {
+              oprot.WriteString(_iter7);
             }
             oprot.WriteListEnd();
           }
@@ -136,6 +183,12 @@ namespace Client
         __first = false;
         __sb.Append("Moves: ");
         __sb.Append(Moves);
+      }
+      if (Messages != null && __isset.messages) {
+        if(!__first) { __sb.Append(", "); }
+        __first = false;
+        __sb.Append("Messages: ");
+        __sb.Append(Messages);
       }
       __sb.Append(")");
       return __sb.ToString();

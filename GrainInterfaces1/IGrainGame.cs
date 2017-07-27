@@ -1,6 +1,7 @@
 using System.Threading.Tasks;
 using Orleans;
 using System.Collections.Generic;
+using GrainInterfaces1;
 
 namespace GameInterface
 {
@@ -32,6 +33,9 @@ namespace GameInterface
 
         Task<bool> JoinGame(string playerName);
 
+
+        Task<bool> LeftGame(string playerName);
+
     }
 
     public interface IMap : IGrainWithStringKey
@@ -42,6 +46,12 @@ namespace GameInterface
         Task<bool> Leave(string objKey);
 
         Task Tick(int frame);
+
+
+        Task UnSubscribe(IMapObserver observer);
+        Task Subscribe(IMapObserver observer);
+
+        Task SendUpdateMessage(string message);//真的需要吗?
     }
 
 

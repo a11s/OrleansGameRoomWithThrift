@@ -195,7 +195,9 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="GHelper.cs" />
+    <Compile Include="EventBuffer.cs" />
+    <Compile Include="G.cs" />
+    <Compile Include="PlayerCache.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="ClientProcessor.cs" />
@@ -204,9 +206,11 @@
     <Compile Include="thriftinterface\GW.cs" />
     <Compile Include="thriftinterface\player_base_info.cs" />
     <Compile Include="thriftinterface\vector3.cs" />
+    <Compile Include="TokenInfo.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
+    <Compile Include="ClientProcessor.LostPlayer.cs" />
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>

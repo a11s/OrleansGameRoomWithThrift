@@ -48,6 +48,7 @@
     <Compile Include="Common.cs" />
     <Compile Include="IGateWay.cs" />
     <Compile Include="IGrainGame.cs" />
+    <Compile Include="IMapObserver.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

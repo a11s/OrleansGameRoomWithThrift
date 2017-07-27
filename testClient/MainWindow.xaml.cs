@@ -38,13 +38,27 @@ namespace testClient
         /// </summary>
         void OnPulse()
         {
+            if (string.IsNullOrWhiteSpace(Global.SessionId))
+            {
+                return;
+            }
             var events = Global.Network?.get_events(Global.SessionId);
             for (int i = 0; i < events?.Count; i++)
             {
                 var evt = events[i];
                 DoMoves(evt.Moves);
+                DoMessage(evt.Messages);
             }
             events?.Clear();
+        }
+
+        private void DoMessage(List<string> messages)
+        {
+            if (messages == null && messages.Count == 0)
+            {
+                return;
+            }
+            this.Title = messages[0];
         }
 
         private void DoMoves(List<event_move> moves)

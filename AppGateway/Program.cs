@@ -7,6 +7,7 @@ using System.Linq;
 using System.Net;
 using System.Reflection;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace AppGateway
@@ -38,6 +39,7 @@ namespace AppGateway
 
         private static void initThrift(IGateway gw)
         {
+            G.DefaultGateway = gw;
             var cp = new ClientProcessor(gw);
             var t_processor = new Client.GW.Processor(cp);
             var transport = new Thrift.Transport.TServerSocket(6325, 100000, true);
@@ -53,6 +55,16 @@ namespace AppGateway
                 System.Threading.ThreadPool.GetMaxThreads(out var wt, out var cpt);
                 Console.WriteLine($"ThreadPool maxwt:{wt} maxcpt:{cpt}");
                 tps.Serve();
+            });
+
+            Task.Run(() =>
+            {
+
+                while (true)
+                {
+                    cp.CheckHeartbeat();
+                    Thread.Sleep(1000);
+                }
             });
         }
     }
