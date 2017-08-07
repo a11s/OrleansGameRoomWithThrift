@@ -32,6 +32,14 @@ namespace testClient
                 {
                     dispatcher.Invoke(callback);
                 }
+                catch(System.Net.Sockets.SocketException se)
+                {
+                    //todo: socket
+                }
+                catch (System.IO.IOException ioe)
+                {
+                    //todo: network 
+                }
                 catch (Exception ex)
                 {
                     throw ex;
