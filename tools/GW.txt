@@ -1,0 +1,34 @@
+namespace csharp Client
+	struct vector3{
+		1:double x,
+		2:double y,
+		3:double z,
+	}
+	struct game_event{
+		1:list<event_move> moves;
+		2:list<string> messages;
+
+	}
+	struct event_move{
+		1:string key,
+		2:double x,
+		3:double y,
+		4:double z
+	}
+	struct player_base_info{
+		1:string player_name,
+		2:string map_id,
+		3:vector3 last_map_pos,
+		
+	}
+
+service GW{
+
+	string auth(1:string acc_name);
+	list<player_base_info> get_player_list(1:string sid);
+	bool join_game(1:string sid,2:string player_name);
+	bool join_map(1:string sid, 2:string map_name);
+	bool try_move(1:string sid, 2:string key, 3:double x,4:double y,5:double z);
+	list<game_event> get_events(1:string sid);
+	
+}
