@@ -1,2 +1,3 @@
 gw.txt
 thrift-0.10.0.exe
+thrift-0.10.0.exe --gen csharp GW.txt
