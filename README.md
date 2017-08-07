@@ -6,3 +6,4 @@
 2 run AppGateway.exe  
 3 run testClient.exe x 2 or more  
 
+<img src='https://github.com/a11s/OrleansGameRoom/blob/master/images/silos1.jpg?raw=true'/>
